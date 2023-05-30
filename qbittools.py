@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse, logging, sys, pkgutil, collections, os, configparser
-import ipaddress
+import ipaddress, urllib
 from typing import NamedTuple
 import pathlib3x as pathlib
 
@@ -22,30 +22,42 @@ config = None
 
 def add_default_args(parser):
     parser.add_argument('-C', '--config', metavar='~/.config/qBittorrent/qBittorrent.conf', default='~/.config/qBittorrent/qBittorrent.conf', required=False)
-    parser.add_argument('-p', '--port', metavar='12345', help='port', required=False)
-    parser.add_argument('-s', '--server', metavar='127.0.0.1', help='host', required=False)
+    parser.add_argument('-s', '--server', metavar='127.0.0.1:8080', help='host', required=False)
     parser.add_argument('-U', '--username', metavar='username', required=False)
     parser.add_argument('-P', '--password', metavar='password', required=False)
 
 def qbit_client(args):
     global config
 
-    config = config_values(args.config)
-
+    # if user didn't provide arguments try to get them from env variables
     if args.server is None:
-        args.server = config.host
-
-    if args.port is None:
-        args.port = config.port
+        args.server = os.environ.get('QBITTOOLS_SERVER')
 
     if args.username is None:
-        args.username = config.username
+        args.username = os.environ.get('QBITTOOLS_USER')
 
-    if args.server is None or args.port is None:
-        logger.error('Unable to get qBittorrent host and port automatically, specify config file or host/port manually, see help with -h')
+    if args.password is None:
+        args.password = os.environ.get('QBITTOOLS_PASSWORD')
+
+    # if user didn't provide environment variables try to parse values from the config
+    if args.server is None:
+        config = config_values(args.config)
+
+        if not config.host is None and not config.port is None:
+            url = urllib.parse.urlparse(config.host)
+            url._replace(netloc=url.hostname + ':' + config.port)
+            args.server = url.geturl()
+
+    if args.username is None:
+        config = config_values(args.config)
+        args.username = config.username
+    
+    # if there is no qbittorrent instance data provided
+    if args.server is None:
+        logger.error('Unable to get qBittorrent host automatically, specify config file or host manually, see help with -h')
         sys.exit(1)
 
-    client = qbittorrentapi.Client(host=f"{args.server}:{args.port}", username=args.username, password=args.password)
+    client = qbittorrentapi.Client(host=args.server, username=args.username, password=args.password)
 
     try:
         client.auth_log_in()
