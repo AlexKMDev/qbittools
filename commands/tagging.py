@@ -41,7 +41,8 @@ def __init__(args, logger):
         'complete season uploaded',
         'problem with',
         'specifically banned',
-        'trumped'
+        'trumped',
+        'i\'m sorry dave, i can\'t do that' # weird stuff from racingforme
     ]
     
     maintenance_matches = [
