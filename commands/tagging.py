@@ -12,11 +12,48 @@ def __init__(args, logger):
     client = qbittools.qbit_client(args)
 
     today = datetime.today()
-    default_tags = ['Not Working', 'added:', 'Unregistered', 'Tracker Down', 't:', 'Duplicates', 'activity:', 'Not Linked']
+    default_tags = [
+        'Not Working',
+        'added:',
+        'Unregistered',
+        'Tracker Down',
+        't:',
+        'Duplicates',
+        'activity:',
+        'Not Linked'
+    ]
 
-    unregistered_matches = ['unregistered', 'not registered', 'not found', 'not exist', 'unknown', 'uploaded', 'upgraded', 'season pack', 'packs are available', 'pack is available', 'internal available', 'season pack out']
-    maintenance_matches = ['tracker is down', 'maintenance']
-    dht_matches = ['** [DHT] **', '** [PeX] **', '** [LSD] **']
+    unregistered_matches = [
+        'unregistered',
+        'not registered',
+        'not found',
+        'not exist',
+        'unknown',
+        'uploaded',
+        'upgraded',
+        'season pack',
+        'packs are available',
+        'pack is available',
+        'internal available',
+        'season pack out',
+        'dead',
+        'dupe',
+        'complete season uploaded',
+        'problem with',
+        'specifically banned',
+        'trumped'
+    ]
+    
+    maintenance_matches = [
+        'tracker is down',
+        'maintenance'
+    ]
+
+    dht_matches = [
+        '** [DHT] **',
+        '** [PeX] **',
+        '** [LSD] **'
+    ]
 
     tag_hashes = collections.defaultdict(list)
     tag_sizes = collections.defaultdict(int)
