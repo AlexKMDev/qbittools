@@ -6,7 +6,7 @@ qbittools is a feature rich CLI for the management of torrents in qBittorrent.
 
 If you're feeling generous, you can support this project and me:
 
-By renting a server with my affiliate link: https://clients.walkerservers.com/aff.php?aff=249
+By renting a server with my affiliate link: https://my.hostingby.design/aff.php?aff=1008
 
 USDT TRC20: `TUH5ySiTHYpG2vrPYu9uCT7ev6DLHDGzkG`
 
@@ -92,7 +92,7 @@ git clone https://gitlab.com/AlexKM/qbittools.git && cd qbittools
 # build the image
 docker build -t qbittools:latest --pull .
 # run a container with the resulting binary and access to host network
-docker run -it --rm --network host qbittools reannounce -p 12345
+docker run -it --rm --network host qbittools reannounce -s 127.0.0.1:12345
 ```
 
 </details>
@@ -119,7 +119,7 @@ qBittools doesn't have any configuration files currently. It parses host, port a
 
 You also have to specify your password every time with `-P` flag unless you enable `Web UI -> Bypass authentication for clients on localhost` in qBittorrent's settings, because there is no way for qBittools to retrieve it in plaintext.
 
-You also can specify host, port and username manually without a configuration file with `-s`, `-p` and `-U` flags accordingly.
+You also can specify host and username manually without a configuration file with `-s` and `-U` flags accordingly.
 
 ## Usage
 
@@ -130,12 +130,10 @@ All commands have extensive help with all available options:
 
 ```bash
 $ qbittools export -h
-usage: qbittools export [-h] -p 12345 [-s 127.0.0.1] [-U username] [-P password] [-i ~/.local/share/qBittorrent/BT_backup] -o ~/export [-c mycategory] [-t [mytag ...]]
+usage: qbittools export [-h] [-s 127.0.0.1] [-U username] [-P password] [-i ~/.local/share/qBittorrent/BT_backup] -o ~/export [-c mycategory] [-t [mytag ...]]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -p 12345, --port 12345
-                        port
   -s 127.0.0.1, --server 127.0.0.1
                         host
   -U username, --username username
