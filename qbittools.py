@@ -31,6 +31,9 @@ def add_default_args(parser):
 def qbit_client(args):
     global config
 
+    if args.port:
+        logger.warning('Using deprecated -p/--port flag, it will be removed in future releases!')
+
     # if user didn't provide arguments try to get them from env variables
     if args.server is None:
         args.server = os.environ.get('QBITTOOLS_SERVER')
