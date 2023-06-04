@@ -66,7 +66,10 @@ def qbit_client(args):
     try:
         client.auth_log_in()
 
-        if (config is None or config.save_path is None) and client.application.preferences.save_path is not None:
+        if config is None:
+            config = QbitConfig(None, None, None, None)
+
+        if config.save_path is None and client.application.preferences.save_path is not None:
             config = QbitConfig(config.host, config.port, config.username, pathlib.Path(client.application.preferences.save_path))
         else:
             logger.warning('Unable to get default save path!')
