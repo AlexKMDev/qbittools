@@ -1,14 +1,41 @@
 FROM python:3 as builder
+ARG VERSION
+ARG TARGET
+ARG SCCACHE_VERSION=0.5.3
+ARG RUSTC_WRAPPER=/sccache
+
 ENV DEBIAN_FRONTEND noninteractive
+ENV CARGO_HOME=/app/cache/cargo
+ENV PIP_CACHE_DIR=/app/cache/pip
+ENV PYOXIDIZER_CACHE_DIR=/app/cache/pyoxidizer
+ENV SCCACHE_IDLE_TIMEOUT=0
+ENV SCCACHE_DIR=/app/cache/sccache
+
+RUN test -n "$TARGET" && \
+    test -n "$VERSION"
+
 RUN apt update && apt install -y upx binutils musl-tools --no-install-recommends && rm -rf /var/lib/apt/lists/*
 RUN python3 -m pip install pyoxidizer==0.23.0
-WORKDIR /usr/src/myapp
-COPY . .
-RUN pyoxidizer build --release --target-triple x86_64-unknown-linux-musl
-RUN strip build/x86_64-unknown-linux-musl/release/install/qbittools
-RUN upx --best --lzma build/x86_64-unknown-linux-musl/release/install/qbittools
 
-FROM alpine:latest
-RUN apk add --no-cache git ca-certificates
-COPY --from=builder /usr/src/myapp/build/x86_64-unknown-linux-musl/release/install/qbittools /usr/local/bin/qbittools
-ENTRYPOINT ["qbittools"]
+RUN wget -O sccache.tar.gz --progress dot:mega "https://github.com/mozilla/sccache/releases/download/v$SCCACHE_VERSION/sccache-v$SCCACHE_VERSION-x86_64-unknown-linux-musl.tar.gz" && \
+    tar -xvzf sccache.tar.gz && \
+    mv sccache-*/sccache /sccache && \
+    chmod +x /sccache
+
+WORKDIR /app
+COPY . .
+
+RUN echo __version__ = "\"$VERSION\"" | tee _version.py
+RUN /sccache --start-server && \
+    /sccache --show-stats && \
+    pyoxidizer build --release --verbose --target-triple $TARGET && \
+    /sccache --show-stats && \
+    /sccache --stop-server
+RUN mv build/$TARGET/release/install/qbittools .
+RUN strip qbittools
+RUN upx --best --lzma qbittools
+
+
+FROM scratch
+COPY --from=builder /app/qbittools /
+COPY --from=builder /app/cache /cache
