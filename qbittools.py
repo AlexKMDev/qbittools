@@ -21,10 +21,12 @@ logger = logging.getLogger(__name__)
 config = None
 
 def add_default_args(parser):
-    parser.add_argument('-C', '--config', metavar='~/.config/qBittorrent/qBittorrent.conf', default='~/.config/qBittorrent/qBittorrent.conf', required=False)
-    parser.add_argument('-s', '--server', metavar='127.0.0.1:8080', help='host', required=False)
+    parser.add_argument('-C', '--config', metavar='~/.config/qBittorrent/qBittorrent.conf', default='~/.config/qBittorrent/qBittorrent.conf', help='path to qBittorrent config', required=False)
+    parser.add_argument('-s', '--server', metavar='127.0.0.1:8080', help='qBittorrent host', required=False)
+    parser.add_argument('-p', '--port', metavar='12345', help='qBittorrent port, deprecated flag', required=False)
     parser.add_argument('-U', '--username', metavar='username', required=False)
     parser.add_argument('-P', '--password', metavar='password', required=False)
+    parser.add_argument('-k', '--disable-ssl-verify', help='disable SSL certificate verification when connecting to qBittorrent host', required=False, action='store_true')
 
 def qbit_client(args):
     global config
@@ -43,10 +45,12 @@ def qbit_client(args):
     if args.server is None:
         config = config_values(args.config)
 
-        if not config.host is None and not config.port is None:
+        if config.host is not None and config.port is not None:
             url = urllib.parse.urlparse(config.host)
-            url._replace(netloc=url.hostname + ':' + config.port)
-            args.server = url.geturl()
+
+            if url.hostname is not None:
+                url._replace(netloc=url.hostname + ':' + config.port)
+                args.server = url.geturl()
 
     if args.username is None:
         config = config_values(args.config)
@@ -57,13 +61,15 @@ def qbit_client(args):
         logger.error('Unable to get qBittorrent host automatically, specify config file or host manually, see help with -h')
         sys.exit(1)
 
-    client = qbittorrentapi.Client(host=args.server, username=args.username, password=args.password)
+    client = qbittorrentapi.Client(host=args.server, username=args.username, password=args.password, VERIFY_WEBUI_CERTIFICATE=args.disable_ssl_verify)
 
     try:
         client.auth_log_in()
 
-        if config.save_path is None and not client.application.preferences.save_path is None:
+        if (config is None or config.save_path is None) and client.application.preferences.save_path is not None:
             config = QbitConfig(config.host, config.port, config.username, pathlib.Path(client.application.preferences.save_path))
+        else:
+            logger.warning('Unable to get default save path!')
     except qbittorrentapi.LoginFailed as e:
         logger.error(e)
     return client
@@ -78,17 +84,18 @@ def config_values(path):
     preferences = config['Preferences']
     host = preferences.get('webui\\address')
 
-    if not host is None:
+    if host is not None:
         try:
             host = ipaddress.ip_address(host)
+            host = 'http://' + host
         except ValueError as e:
-            host = '127.0.0.1'
+            host = 'http://127.0.0.1'
 
     port = preferences.get('webui\\port')
     user = preferences.get('webui\\username')
     save_path = preferences.get('downloads\\savepath')
 
-    if not save_path is None:
+    if save_path is not None:
         save_path = pathlib.Path(save_path)
 
     return QbitConfig(host, port, user, save_path)
