@@ -13,7 +13,7 @@ install:
 clean:
 	rm -rf ./dist ./build
 docker:
-	docker build --pull -t registry.gitlab.com/alexkm/qbittools:$(ver) .
+	docker buildx build --platform=linux/amd64,linux/arm64 --pull -t registry.gitlab.com/alexkm/qbittools:$(ver) .
 	docker tag registry.gitlab.com/alexkm/qbittools:$(ver) registry.gitlab.com/alexkm/qbittools:latest
 	docker push registry.gitlab.com/alexkm/qbittools:$(ver)
 	docker push registry.gitlab.com/alexkm/qbittools:latest
