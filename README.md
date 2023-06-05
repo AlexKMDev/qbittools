@@ -91,7 +91,7 @@ docker run -it --rm --network host registry.gitlab.com/alexkm/qbittools tagging 
 
 Connect to a qBittorrent container in the same Docker network:
 ```bash
-docker run -it --rm registry.gitlab.com/alexkm/qbittools tagging --unregistered -s qbittorrent:8080
+docker run -it --rm --network mynetwork registry.gitlab.com/alexkm/qbittools tagging --unregistered -s qbittorrent:8080
 ```
 
 ### Run as a python script
