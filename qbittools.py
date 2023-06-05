@@ -74,7 +74,8 @@ def qbit_client(args):
 
         if config.save_path is None and client.application.default_save_path is not None:
             config = QbitConfig(config.host, config.port, config.username, pathlib.Path(client.application.default_save_path))
-        else:
+        
+        if config.save_path is None:
             logger.warning('Unable to get default save path!')
     except qbittorrentapi.LoginFailed as e:
         logger.error(e)
