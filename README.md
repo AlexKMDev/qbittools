@@ -60,8 +60,8 @@ Many thanks!
 * Any usable Linux distribution (binary builds are built with musl and fully static starting from 0.4.0)
 * ca-certificates (for connecting to https)
 
-* **binary builds are supported only for: Linux `x86-64` (limited by PyOxidizer support)**
-* docker builds are supported for: Linux `x86-64, aarch64`, Windows and macOS with corresponding architectures, but which still use virtualization to launch Docker in a Linux VM.
+* **binary builds are supported only for: Linux `x86_64` (limited by PyOxidizer support)**
+* docker builds are supported for: Linux `x86_64, aarch64`, Windows and macOS with corresponding architectures, but which still use virtualization to launch Docker in a Linux VM.
 
 ## Installation
 
