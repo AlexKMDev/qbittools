@@ -18,13 +18,13 @@ before_script:
    - docker context create builder-context
    - docker buildx create --name builderx --driver docker-container --use builder-context
    - apk add --no-cache python3 py3-pip git
-   - pip3 --version && python3 --version
-   - pip3 install gitlab-release
-   - mkdir -p ./cache
 
 build_binary_amd64:
   stage: build
   script:
+    - pip3 --version && python3 --version
+    - pip3 install gitlab-release
+    - mkdir -p ./cache
     - docker buildx build --platform=linux/amd64 -f Dockerfile.pyoxidizer --build-arg TARGET=x86_64-unknown-linux-musl --build-arg VERSION=$CI_COMMIT_TAG --build-arg CACHE_DIR=linux_amd64 --build-arg RUSTC_WRAPPER="" -o out/linux_amd64 .
     - rm -rf ./cache/linux_amd64
 #    - mv out/linux_amd64/cache ./cache/linux_amd64
@@ -39,14 +39,14 @@ build_binary_amd64:
 build_docker_amd64:
   stage: build
   script:
-    - docker buildx build --cache-from "$CACHE_IMAGE_NAME" -t "$CACHE_IMAGE_NAME" --push --platform=linux/amd64 .
+    - docker buildx build --cache-from "$REGISTRY_IMAGE_NAME:latest" -t "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG" --push --platform=linux/amd64 .
   rules:
     - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/'
 
 build_docker_arm64:
   stage: build
   script:
-    - docker buildx build --cache-from "$CACHE_IMAGE_NAME" -t "$CACHE_IMAGE_NAME" --push --platform=linux/arm64 .
+    - docker buildx build --cache-from "$REGISTRY_IMAGE_NAME:latest" -t "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG" --push --platform=linux/arm64 .
   rules:
     - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/'
 
@@ -59,7 +59,7 @@ build_docker_arm64:
 push_docker:
   stage: push
   script: 
-    - docker buildx build --cache-from "$CACHE_IMAGE_NAME" -t "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG"  --push --platform=linux/amd64,linux/arm64 .
-    - docker buildx build --cache-from "$CACHE_IMAGE_NAME" -t "$REGISTRY_IMAGE_NAME:latest"  --push --platform=linux/amd64,linux/arm64 .
+    # - docker buildx build --cache-from "$CACHE_IMAGE_NAME" -t "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG"  --push --platform=linux/amd64,linux/arm64 .
+    - docker buildx build --cache-from "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG" -t "$REGISTRY_IMAGE_NAME:latest"  --push --platform=linux/amd64,linux/arm64 .
   rules:
     - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/'
