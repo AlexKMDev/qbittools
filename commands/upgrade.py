@@ -43,7 +43,7 @@ def confirm():
 
 def __init__(args, logger):
     if not getattr(sys, 'oxidized', False):
-        logger.error("Not a binary version, use git pull to upgrade")
+        logger.error("Not a binary version, use git pull or docker pull to upgrade")
         return
     
     old_bin = Path(sys.executable)
@@ -53,10 +53,16 @@ def __init__(args, logger):
 
     url = "https://gitlab.com/AlexKM/qbittools.git"
     remote_refs = porcelain.ls_remote(url)
+    versions = []
 
-    versions = list(map(lambda x: parse(x.decode("utf-8").replace("refs/tags/", "")), remote_refs))
-    versions = list(filter(lambda x: isinstance(x, Version), versions))
+    for x in remote_refs:
+        x = x.decode("utf-8").replace("refs/tags/", "")
 
+        try:
+            versions.append(parse(x))
+        except:
+            continue    
+    
     if len(versions) == 0:
         logger.error('Failed to find the latest version.')
         sys.exit(1)
