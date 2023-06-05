@@ -3,13 +3,14 @@ ARG VERSION
 ARG TARGET
 ARG SCCACHE_VERSION=0.5.3
 ARG RUSTC_WRAPPER=/sccache
+ARG CACHE_DIR
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV CARGO_HOME=/app/cache/cargo
-ENV PIP_CACHE_DIR=/app/cache/pip
-ENV PYOXIDIZER_CACHE_DIR=/app/cache/pyoxidizer
+ENV CARGO_HOME=/app/cache/$CACHE_DIR/cargo
+ENV PIP_CACHE_DIR=/app/cache/$CACHE_DIR/pip
+ENV PYOXIDIZER_CACHE_DIR=/app/cache/$CACHE_DIR/pyoxidizer
 ENV SCCACHE_IDLE_TIMEOUT=0
-ENV SCCACHE_DIR=/app/cache/sccache
+ENV SCCACHE_DIR=/app/cache/$CACHE_DIR/sccache
 
 RUN test -n "$TARGET" && \
     test -n "$VERSION"
