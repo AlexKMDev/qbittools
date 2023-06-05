@@ -31,11 +31,11 @@ Many thanks!
 - [Table of contents](#table-of-contents)
 - [Requirements](#requirements)
 - [Installation](#installation)
-  - [Binary version](#binary-version-only-linux-x86_64)
+  - [Binary version **(only Linux x86\_64)**](#binary-version-only-linux-x86_64)
   - [Docker image](#docker-image)
-  - [Run as a script (optional)](#run-as-a-script-optional)
+  - [Run as a python script](#run-as-a-python-script)
 - [Building](#building)
-  - [Building binary manually with Docker](#building-binary-manually-with-docker)
+  - [Building binary manually with Docker (optional)](#building-binary-manually-with-docker-optional)
 - [Configuration](#configuration)
 - [Usage](#usage)
   - [Help](#help)
@@ -63,7 +63,7 @@ Many thanks!
 * ca-certificates (for connecting to https)
 
 * **binary builds are supported only for: Linux `x86_64` (limited by PyOxidizer support)**
-* docker builds are supported for: Linux `x86_64, aarch64`, Windows and macOS with corresponding architectures, but which still use virtualization to launch Docker in a Linux VM.
+* docker builds are supported for: Linux `amd64, arm64/v8, 386, arm/v6, arm/v7, ppc64le, s390x`, Windows and macOS with corresponding architectures, but which still use virtualization to launch Docker in a Linux VM.
 
 ## Installation
 
