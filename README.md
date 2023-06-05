@@ -31,9 +31,11 @@ Many thanks!
 - [Table of contents](#table-of-contents)
 - [Requirements](#requirements)
 - [Installation](#installation)
+  - [Binary version](#binary-version-only-linux-x86_64)
   - [Docker image](#docker-image)
-  - [Building binary manually with Docker (optional)](#building-binary-manually-with-docker-optional)
   - [Run as a script (optional)](#run-as-a-script-optional)
+- [Building](#building)
+  - [Building binary manually with Docker](#building-binary-manually-with-docker)
 - [Configuration](#configuration)
 - [Usage](#usage)
   - [Help](#help)
@@ -65,6 +67,7 @@ Many thanks!
 
 ## Installation
 
+### Binary version **(only Linux x86_64)**
 Install the latest version with the install script to `/usr/local/bin/qbittools` (root privileges needed)
 ```bash
 curl -Ls https://gitlab.com/AlexKM/qbittools/-/raw/master/install.sh | sudo bash
@@ -83,24 +86,15 @@ The script creates a temporary directory, retrieves the latest git tag and downl
 Run a container with access to host network:
 
 ```bash
-docker run -it --rm --network host registry.gitlab.com/alexkm/qbittools tagging --unregistered
+docker run -it --rm --network host registry.gitlab.com/alexkm/qbittools tagging --unregistered -s 127.0.0.1:8080
 ```
 
-### Building binary manually with Docker (optional)
-<details><summary>Click to expand</summary>
-
+Connect to a qBittorrent container in the same Docker network:
 ```bash
-# clone the repository
-git clone https://gitlab.com/AlexKM/qbittools.git && cd qbittools
-# build the image
-docker build -t qbittools:latest --pull .
-# run a container with the resulting binary and access to host network
-docker run -it --rm --network host qbittools reannounce -s 127.0.0.1:12345
+docker run -it --rm registry.gitlab.com/alexkm/qbittools tagging --unregistered -s qbittorrent:8080
 ```
 
-</details>
-
-### Run as a script (optional)
+### Run as a python script
 <details><summary>Click to expand</summary>
 
 ```bash
@@ -110,9 +104,26 @@ git clone https://gitlab.com/AlexKM/qbittools.git && cd qbittools
 virtualenv -p python3 venv
 source venv/bin/activate
 # install dependencies
-make deps
-# use qbittools.py instead of the binary
+pip3 install -r requirements.txt
+# use qbittools.py
+./qbittools.py tagging --unregistered -s 127.0.0.1:8080
 ```
+
+</details>
+
+## Building
+
+### Building binary manually with Docker (optional)
+<details><summary>Click to expand</summary>
+
+```bash
+# clone the repository
+git clone https://gitlab.com/AlexKM/qbittools.git && cd qbittools
+# build the image
+docker buildx build --platform=linux/amd64 -t qbittools:latest -f Dockerfile.pyoxidizer --build-arg TARGET=x86_64-unknown-linux-musl --build-arg VERSION=0.0.0 --build-arg CACHE_DIR=linux_amd64 -o out/linux_amd64 .
+```
+
+The resulting binary will be located at `out/linux_amd64/qbittools`.
 
 </details>
 
