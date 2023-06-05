@@ -52,7 +52,7 @@ def qbit_client(args):
             url = urllib.parse.urlparse(config.host)
 
             if url.hostname is not None:
-                url._replace(netloc=url.hostname + ':' + config.port)
+                url = url._replace(netloc=url.hostname + ':' + config.port)
                 args.server = url.geturl()
 
     if args.username is None:
