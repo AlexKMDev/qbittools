@@ -38,7 +38,7 @@ build_binary_amd64:
 build_docker:
   stage: build
   script:
-    - docker buildx build --cache-from "$REGISTRY_IMAGE_NAME:latest" -t "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG" --platform=linux/amd64,linux/arm64 .
+    - docker buildx build --cache-from "$REGISTRY_IMAGE_NAME:latest" -t "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG" --platform=linux/amd64,linux/arm64 --load .
     - docker tag "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG" "$REGISTRY_IMAGE_NAME:latest"
     - docker push "$REGISTRY_IMAGE_NAME:$CI_COMMIT_TAG"
     - docker push "$REGISTRY_IMAGE_NAME:latest"
