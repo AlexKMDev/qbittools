@@ -39,4 +39,4 @@ RUN upx --best --lzma qbittools
 
 FROM scratch
 COPY --from=builder /app/qbittools /
-COPY --from=builder /app/cache /cache
+#COPY --from=builder /app/cache /cache

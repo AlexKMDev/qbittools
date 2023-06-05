@@ -3,9 +3,9 @@ variables:
   REGISTRY_IMAGE_NAME: "registry.gitlab.com/alexkm/qbittools"
   CACHE_IMAGE_NAME: "registry.gitlab.com/alexkm/qbittools:cache"
   BUILDKIT_INLINE_CACHE: "1"
-cache:
-  paths:
-    - cache
+#cache:
+#  paths:
+#    - cache
 services:
   - docker:20-dind
 
@@ -17,7 +17,7 @@ before_script:
    - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
    - docker context create builder-context
    - docker buildx create --name builderx --driver docker-container --use builder-context
-   - apk add --no-cache python3 py3-pip
+   - apk add --no-cache python3 py3-pip git
    - pip3 --version && python3 --version
    - pip3 install gitlab-release
    - mkdir -p ./cache
@@ -25,9 +25,9 @@ before_script:
 build_binary_amd64:
   stage: build
   script:
-    - docker buildx build --platform=linux/amd64 -f Dockerfile.pyoxidizer --build-arg TARGET=x86_64-unknown-linux-musl --build-arg VERSION=$CI_COMMIT_TAG --build-arg CACHE_DIR=linux_amd64 -o out/linux_amd64 .
+    - docker buildx build --platform=linux/amd64 -f Dockerfile.pyoxidizer --build-arg TARGET=x86_64-unknown-linux-musl --build-arg VERSION=$CI_COMMIT_TAG --build-arg CACHE_DIR=linux_amd64 --build-arg RUSTC_WRAPPER="" -o out/linux_amd64 .
     - rm -rf ./cache/linux_amd64
-    - mv out/linux_amd64/cache ./cache/linux_amd64
+#    - mv out/linux_amd64/cache ./cache/linux_amd64
     - mv out/linux_amd64/qbittools qbittools_linux_x86_64
     - gitlab-release qbittools_linux_x86_64
   artifacts:
