@@ -25,6 +25,12 @@ fi
 
 arch=$(uname -m)
 os=$(uname -s)
+
+if [ "${arch,,}" != "x86_64" ] || [ "${os,,}" != "linux" ]; then
+    echo "Only Linux x86_64 is supported for binary builds for now!"
+    exit 1
+fi
+
 url="https://gitlab.com/api/v4/projects/23524151/packages/generic/qbittools/$tag/qbittools_${os,,}_${arch,,}"
 
 http_code=$(curl -L $url -o $destination --write-out "%{http_code}")
