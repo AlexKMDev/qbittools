@@ -132,8 +132,8 @@ def __init__(args, logger):
                     tags_to_add.append(f"t:{domain}")
 
             if not working:
-                unregistered_matched = any(x.lower().startswith(rt.msg.lower()) for x in unregistered_matches for rt in real_trackers)
-                maintenance_matched = any(x.lower().startswith(rt.msg.lower()) for x in maintenance_matches for rt in real_trackers)
+                unregistered_matched = any(rt.msg.lower().startswith(x.lower()) for x in unregistered_matches for rt in real_trackers)
+                maintenance_matched = any(rt.msg.lower().startswith(x.lower()) for x in maintenance_matches for rt in real_trackers)
 
                 if args.unregistered and unregistered_matched:
                     tags_to_add.append('Unregistered')
