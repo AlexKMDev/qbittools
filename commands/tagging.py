@@ -131,17 +131,19 @@ def __init__(args, logger):
                 if len(domain) > 0:
                     tags_to_add.append(f"t:{domain}")
 
-            if args.unregistered and not working:
-                if any(x in rt.msg.lower() for x in unregistered_matches for rt in real_trackers):
+            if not working:
+                unregistered_matched = any(x.lower().startswith(rt.msg.lower()) for x in unregistered_matches for rt in real_trackers)
+                maintenance_matched = any(x.lower().startswith(rt.msg.lower()) for x in maintenance_matches for rt in real_trackers)
+
+                if args.unregistered and unregistered_matched:
                     tags_to_add.append('Unregistered')
 
                     if args.move_unregistered and t.time_active > 60 and not t.category == 'Unregistered':
                         t.set_category(category='Unregistered')
-            elif args.tracker_down and not working:
-                if any(x in rt.msg.lower() for x in maintenance_matches for rt in real_trackers):
+                elif args.tracker_down and maintenance_matched:
                     tags_to_add.append('Tracker Down')
-            elif args.not_working and not working:
-                tags_to_add.append('Not Working')
+                elif args.not_working:
+                    tags_to_add.append('Not Working')
 
         if args.duplicates:
             match = [(infohash, path, size) for infohash, path, size in content_paths if path == t.content_path and not t.content_path == t.save_path]
