@@ -76,15 +76,15 @@ def __init__(args, logger):
     if args.tags:
         filtered_torrents = list(filter(lambda x: any(y in x.tags for y in args.tags), filtered_torrents))
 
-    tags_to_delete = list(filter(lambda tag: any(tag.startswith(x) for x in default_tags), client.torrents_tags()))
+    tags_to_delete = list(filter(lambda tag: any(tag.lower().startswith(x.lower()) for x in default_tags), client.torrents_tags()))
 
     if tags_to_delete:
-        hashes = map(lambda t: t.hash, filtered_torrents)
+        hashes = list(map(lambda t: t.hash, filtered_torrents))
         client.torrents_remove_tags(tags=tags_to_delete, torrent_hashes=hashes)
 
-        logger.info('Pruning unused tags...')
+        logger.info('Pruning old tags...')
         
-        empty_tags = list(filter(lambda tag: len(list(filter(lambda t: tag in t.tags, all_torrents))) == 0, tqdm(tags_to_delete)))
+        empty_tags = list(filter(lambda tag: len(list(filter(lambda t: tag in t.tags, client.torrents.info()))) == 0, tqdm(tags_to_delete)))
         client.torrents_delete_tags(tags=empty_tags)
 
     logger.info('Collecting torrents info...')
