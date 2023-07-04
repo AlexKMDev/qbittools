@@ -1,4 +1,4 @@
-FROM python:3 as builder
+FROM python:3-bullseye as builder
 ARG VERSION
 ARG TARGET
 ARG SCCACHE_VERSION=0.5.3
