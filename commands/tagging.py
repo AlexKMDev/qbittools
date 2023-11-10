@@ -42,7 +42,8 @@ def __init__(args, logger):
         'problem with',
         'specifically banned',
         'trumped',
-        'i\'m sorry dave, i can\'t do that' # weird stuff from racingforme
+        'i\'m sorry dave, i can\'t do that', # weird stuff from racingforme
+        'torrent existiert nicht (mehr)', # TS
     ]
     
     maintenance_matches = [
